@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <style>
+        #wrapper {
+            width: 1092px;
+            height: 332px;
+            display: block;
+            background: darkred;
+        }
+        body {
+            background: black;
+        }
+        #wrapper {
+            position: relative;
+            overflow: hidden;
+        }
+        #difficulty {
+            position: absolute;
+            right: 7px;
+            top: 9px;
+
+            display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+
+            text-align: right;
+        }
+        #total {
+            position: relative;
+            height: 42px;
+            width: 100%;
+            display: flex;
+        }
+        #total-difficulty {
+            background-image: url("difficulty.png");
+            width: 48px;
+            height: 100%;
+        }
+        #total-l {
+            background-image: url("total-l.png");
+            width: 8px;
+            height: 100%;
+        }
+        #total-m {
+            background-image: url("total-m.png");
+            background-repeat: repeat no-repeat;
+            height: 100%;
+            color: #c0c0c0;
+
+            font-size: 23px;
+            font-family: 'Ror';
+            padding-top: 4px;
+            padding-left: 10px;
+        }
+
+        @font-face {
+            font-family: 'Ror';
+            src: url('riskofrainfont.ttf') format('truetype');
+            font-weight: normal;
+            font-style: normal;
+        }
+    
+
+        #total-r {
+            background-image: url("total-r.png");
+            width: 20px;
+            height: 100%;
+        }
+        #bars {
+            position: relative;
+            right: 0;
+            background-image: url("bars.png");
+            height: 162px;
+            width: 146px;
+        }
+
+        #foreground
+        {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 3436px;
+            height: 333px;
+
+            background-image: url("foreground.png");
+        }
+
+        #foreground #one
+        {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1718px;
+            height: 333px;
+
+            background-image: url("foreground.png");
+        }
+
+        #foreground #two
+        {
+            position: absolute;
+            top: 0;
+            left: 1718px;
+            width: 1718px;
+            height: 333px;
+
+            background-image: url("foreground.png");
+        }
+
+        #background
+        {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 1092px;
+            height: 332px;
+
+            background-image: url("background.png");
+        }
+        #commando
+        {
+            position: absolute;
+            top: 282px;
+            left: 140px;
+            width: 50px;
+            height: 22px;
+            background-repeat: no-repeat;
+            background-position: 0% 0%;
+        }
+
+        #commando.walking
+        {
+            background-image: url("commando_walking.webp");
+        }
+
+        #commando.shooting
+        {
+            background-image: url("commando_shooting.webp");
+        }
+
+        #enemyContainer
+        {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 304px;
+            display: flex;
+            justify-content: flex-end;
+            align-items: flex-end;
+        }
+
+        .enemy {
+            position: absolute;
+            bottom: 0;
+            right: -100px;
+
+            width: 66px;
+            height: 66px;
+            transform: scaleX(-1);
+        }
+
+        .enemy .hpBar {
+            display: block;
+            width: 84px;
+            height: 8px;
+            margin-left: -10px;
+            margin-top: -10px;
+            background: black;
+            border: 2px solid #404157;
+            position: relative;
+        }
+
+        .enemy .hpBarFill {
+            position: absolute;
+            display: block;
+            width: 100%;
+            height: 100%;
+            background: #c7352f;
+            right: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="wrapper">
+        <div id="background"></div>
+        <div id="foreground">
+            <div id="one"></div>
+            <div id="two"></div>
+        </div>
+        <div id="difficulty">
+            <div id="total">
+                <div id="total-difficulty"></div>
+                <div id="total-l"></div>
+                <div id="total-m">$1.234.567</div>
+                <div id="total-r"></div>
+            </div>
+            <div id="bars">
+
+            </div>
+        </div>
+        <div id="commando"></div>
+        <div id="enemyContainer">
+        </div>
+    </div>
+    <script>
+        const availableEnemies = {
+            "Bighorn_Bison": 6000,
+            "Black_Imp": 5000,
+            "Greater_Wisp": 4000,
+            "Sand_Crab": 3000,
+            "Wisp": 2000
+        };
+        const commando = document.getElementById("commando");
+        const pickRandomEnemy = () => {
+            const availableEnemyNames = Object.keys(availableEnemies);
+            return availableEnemyNames[Math.floor(Math.random() * availableEnemyNames.length)];
+        };
+
+        const spawnRandomEnemy = () => {
+            const id = ++enemyCount;
+
+            const enemyContainer = document.getElementById("enemyContainer");
+            const enemyElement = document.createElement("div");
+            enemyElement.className = "enemy";
+            const enemyName = pickRandomEnemy();
+            enemyElement.style.backgroundImage = `url("enemies/${enemyName}.webp")`;
+            const hpBar = document.createElement("div");
+            hpBar.className = "hpBar";
+            const hpBarFill = document.createElement("div");
+            hpBarFill.className = "hpBarFill";
+            hpBar.appendChild(hpBarFill);
+            enemyElement.appendChild(hpBar);
+
+            let enemyScroll = -66;
+            let spawnedAt = Date.now();
+            const enemyInterval = setInterval(() => {
+                enemyScroll += 1;
+                if (enemyScroll > 1718) {
+                    enemyScroll = 0;
+                }
+                enemyElement.style.right = enemyScroll + "px";
+
+                // hpBarFill.style.width = (1 - (Date.now() - spawnedAt) / availableEnemies[enemyName]) * 100 + "%";
+                // deplete hpbarfilled in 5% chunks
+                hpBarFill.style.width = Math.floor((1 - (Date.now() - spawnedAt) / availableEnemies[enemyName]) * 20) * 5 + "%";
+
+                if (Date.now() - spawnedAt > availableEnemies[enemyName]) {
+                    clearEnemy(id);
+                }
+            }, 10);
+
+            activeEnemies[id] = {
+                enemyElement,
+                enemyInterval
+            };
+
+            enemyContainer.appendChild(enemyElement);
+
+            checkState();
+
+            return id;
+        }
+
+        let scrollInterval = null;
+        let backgroundScroll = 0;
+        const setWalking = () =>
+        {
+            Object.keys(activeEnemies).forEach(clearEnemy);
+            
+            commando.className = "walking";
+            const enemyContainer = document.getElementById("enemyContainer");
+            enemyContainer.innerHTML = "";
+            const foreground = document.getElementById("foreground");
+            scrollInterval = setInterval(() => {
+                backgroundScroll += 0.75;
+                if (backgroundScroll > 1718) {
+                    backgroundScroll = 0;
+                }
+                foreground.style.left = -backgroundScroll + "px";
+            }, 10);
+        };
+
+        const activeEnemies = {};
+        const clearEnemy = (id) => {
+            const {enemyElement, enemyInterval} = activeEnemies[id];
+            clearInterval(enemyInterval);
+            enemyElement.remove();
+
+            delete activeEnemies[id];
+
+            if (Object.keys(activeEnemies).length === 0) {
+                setWalking();
+            }
+        };
+        let enemyCount = 0;
+        const setShooting = () =>
+        {
+            clearInterval(scrollInterval);
+
+            commando.className = "shooting";
+        };
+
+        const checkState = () => {
+            if (Object.keys(activeEnemies).length !== 0) {
+                setShooting();
+                return;
+            }
+            setWalking();
+        };
+
+        checkState();
+    </script>
+</body>
+</html>
