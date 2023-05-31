@@ -184,6 +184,17 @@
             background: #c7352f;
             right: 0;
         }
+
+        .sum {
+            color: #c0c0c0;
+            font-size: 16px;
+            font-family: 'Ror';
+            transform: scaleX(-1);
+            text-align: center;
+            margin-top: -39px;
+            padding-bottom: 12px;
+            text-shadow: -2px -2px 0 #000, 2px -2px 0 #000, -2px 2px 0 #000, 1px 2px 0 #000;
+        }
     </style>
 </head>
 <body>
@@ -210,11 +221,11 @@
     </div>
     <script>
         const availableEnemies = {
-            "Bighorn_Bison": 6000,
-            "Black_Imp": 5000,
-            "Greater_Wisp": 4000,
-            "Sand_Crab": 3000,
-            "Wisp": 2000
+            "Bighorn_Bison": {hp: 6000, color: "#715f9a"},
+            "Black_Imp": {hp: 5000, color: "#715f9a"},
+            "Greater_Wisp": {hp: 4000, color: "#c5b894"},
+            "Sand_Crab": {hp: 3000, color: "#c5b894"},
+            "Wisp": {hp: 2000, color: "#d9d6da"}
         };
         const commando = document.getElementById("commando");
         const pickRandomEnemy = () => {
@@ -222,7 +233,7 @@
             return availableEnemyNames[Math.floor(Math.random() * availableEnemyNames.length)];
         };
 
-        const spawnRandomEnemy = () => {
+        const spawnRandomEnemy = (donationValue) => {
             const id = ++enemyCount;
 
             const enemyContainer = document.getElementById("enemyContainer");
@@ -235,6 +246,16 @@
             const hpBarFill = document.createElement("div");
             hpBarFill.className = "hpBarFill";
             hpBar.appendChild(hpBarFill);
+            
+            const sum = document.createElement("div");
+            sum.className = "sum";
+            sum.innerText = `$${donationValue}`;
+            const availableColors = [
+                "#715f9a",
+                "#c5b894",
+                "#d9d6da",
+            ];
+            enemyElement.appendChild(sum);
             enemyElement.appendChild(hpBar);
 
             let enemyScroll = -66;
@@ -246,11 +267,10 @@
                 }
                 enemyElement.style.right = enemyScroll + "px";
 
-                // hpBarFill.style.width = (1 - (Date.now() - spawnedAt) / availableEnemies[enemyName]) * 100 + "%";
-                // deplete hpbarfilled in 5% chunks
-                hpBarFill.style.width = Math.floor((1 - (Date.now() - spawnedAt) / availableEnemies[enemyName]) * 20) * 5 + "%";
+                sum.style.color = availableEnemies[enemyName].color;
+                hpBarFill.style.width = Math.floor((1 - (Date.now() - spawnedAt) / availableEnemies[enemyName].hp) * 20) * 5 + "%";
 
-                if (Date.now() - spawnedAt > availableEnemies[enemyName]) {
+                if (Date.now() - spawnedAt > availableEnemies[enemyName].hp) {
                     clearEnemy(id);
                 }
             }, 10);
