@@ -6,7 +6,8 @@ import styled from '@emotion/styled';
 import TweenNumber from '@gdq/lib/components/TweenNumber';
 import Game from "./classes/Game";
 import { usePIXICanvas } from '@gdq/lib/hooks/usePIXICanvas';
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
+import { debug } from 'console';
 
 registerChannel('Gradius', 30, Gradius, {
 	position: 'bottomLeft',
@@ -23,11 +24,7 @@ export function Gradius(props: ChannelProps) {
 	let elapsed: number, end: number;
 	let now = Date.now();
 	
-    const container = useRef(null);
-	useEffect(() => {
-        container.current.innerHTML = "";
-        container.current.append(canvas);
-    }, [ container, canvas ]);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
 
 	function animate() {
 		requestAnimationFrame(animate);
@@ -44,8 +41,13 @@ export function Gradius(props: ChannelProps) {
 		}
 	}
 
-	animate();
-
+	// when canvas becomes available, initialize the game
+	useEffect(() => {
+		debugger;
+		if (canvasRef.current) {
+			animate();
+		}
+	}, [canvasRef.current]);
 
 	useListenFor('donation', (donation: FormattedDonation) => {
 		/**
@@ -54,8 +56,8 @@ export function Gradius(props: ChannelProps) {
 	});
 
 	return (
-		<Container ref={container}>
-			<canvas ref={canvasRef} width={1092} height={332} />
+		<Container>
+			<Canvas ref={canvasRef} width={1092} height={332} />
 		</Container>
 	);
 }

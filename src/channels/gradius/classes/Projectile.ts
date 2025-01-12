@@ -1,4 +1,5 @@
 import Game from "./Game";
+import projectile from "./images/projectile.png";
 
 export default class Projectile {
   game: Game;
@@ -19,7 +20,8 @@ export default class Projectile {
     this.game = game;
     this.x = x - this.speed;
     this.y = y;
-    this.sheet = document.getElementById("projectile") as HTMLImageElement;
+    this.sheet = new Image();
+    this.sheet.src = projectile;
   }
   update() {
     this.animateSprite();

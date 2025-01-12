@@ -1,6 +1,7 @@
 import Game from "./Game";
 import Option from "./Option";
 import Projectile from "./Projectile";
+import player from "./images/player.png";
 
 export default class Player {
   game: Game;
@@ -33,7 +34,8 @@ export default class Player {
     this.y = (this.game.height * 0.8) / 2;
     this.width = 90 / 1.2;
     this.height = 48 / 1.2;
-    this.sheet = document.getElementById("vicViper") as HTMLImageElement;
+    this.sheet = new Image();
+    this.sheet.src = player;
   }
   update() {
     const sin45 = Math.sin(Math.PI / 4);
@@ -100,6 +102,7 @@ export default class Player {
   draw(ctx: CanvasRenderingContext2D) {
     if (this.game.isMoving) {
       this.options.length && this.options.forEach((option) => option.draw(ctx));
+      debugger;
       ctx.drawImage(
         this.sheet,
         90 * this.sheetOffsetX,

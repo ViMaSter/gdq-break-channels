@@ -1,6 +1,7 @@
 import Game from "./Game";
 import Player from "./Player";
 import Projectile from "./Projectile";
+import option from "./images/option.png";
 
 export default class Option {
   game: Game;
@@ -29,7 +30,8 @@ export default class Option {
     this.offset = offset;
     this.x = this.player.previousPositions[(offset + 1) * 10]?.x;
     this.y = this.player.previousPositions[(offset + 1) * 10]?.y;
-    this.sheet = document.getElementById("option") as HTMLImageElement;
+    this.sheet = new Image();
+    this.sheet.src = option;
     Option.instanceCount++;
   }
   update() {

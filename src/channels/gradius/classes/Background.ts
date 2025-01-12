@@ -1,15 +1,14 @@
 import Game from "./Game";
 import Layer from "./Layer";
+import layer1 from './images/layer1.png';
+import layer2 from './images/layer2.png';
+import layer3 from './images/layer3.png';
 
 export default class Background {
   game: Game;
   layers: Layer[];
   constructor(game: Game) {
     this.game = game;
-    let layer1 = document.getElementById("layer1") as HTMLImageElement;
-    let layer2 = document.getElementById("layer2") as HTMLImageElement;
-    let layer3 = document.getElementById("layer3") as HTMLImageElement;
-
     this.layers = [
       new Layer(this.game, layer1, 0.2, 0.4),
       new Layer(this.game, layer2, 0.8, 0.6),

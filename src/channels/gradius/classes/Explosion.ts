@@ -1,4 +1,6 @@
 import Game from "./Game";
+import explosion from './images/explosion.png';
+import playerExplosion from './images/playerExplosion.png';
 
 export class Explosion {
   game: Game;
@@ -14,7 +16,8 @@ export class Explosion {
   maxFrames = 5;
   constructor(game: Game, x: number, y: number) {
     this.game = game;
-    this.sheet = document.getElementById("enemyExplosion") as HTMLImageElement;
+    this.sheet = new Image();
+    this.sheet.src = explosion;
     this.x = x;
     this.y = y;
   }
@@ -50,7 +53,8 @@ export class PlayerExplosion extends Explosion {
     super(game, x, y);
     this.width = 128 / 1.2;
     this.height = 60 / 1.2;
-    this.sheet = document.getElementById("playerExplosion") as HTMLImageElement;
+    this.sheet = new Image();
+    this.sheet.src = playerExplosion;
   }
   update() {
     this.staggerFrames--;

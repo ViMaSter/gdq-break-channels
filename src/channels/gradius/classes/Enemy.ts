@@ -1,4 +1,6 @@
 import Game from "./Game";
+import garun from './images/garun.png';
+import flipper from './images/flipper.png';
 
 export class Enemy {
   game: Game;
@@ -37,7 +39,8 @@ export class Garun extends Enemy {
     this.width = 60 / 1.2;
     this.height = 60 / 1.2;
     this.y = y;
-    this.sheet = document.getElementById("garun") as HTMLImageElement;
+    this.sheet = new Image();
+    this.sheet.src = garun;
   }
   draw(ctx: CanvasRenderingContext2D) {
     ctx.drawImage(
@@ -75,7 +78,8 @@ export class Flipper extends Enemy {
     this.width = 48 / 1.2;
     this.height = 48 / 1.2;
     this.y = y;
-    this.sheet = document.getElementById("flipper") as HTMLImageElement;
+    this.sheet = new Image();
+    this.sheet.src = flipper;
   }
   draw(ctx: CanvasRenderingContext2D) {
     ctx.save();

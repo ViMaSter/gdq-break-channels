@@ -11,12 +11,13 @@ export default class Layer {
   alpha: number;
   constructor(
     game: Game,
-    image: HTMLImageElement,
+    image: string,
     speedModifier: number,
     alpha: number
   ) {
     this.game = game;
-    this.image = image;
+    this.image = new Image();
+    this.image.src = image;
     this.speedModifier = speedModifier;
     this.alpha = alpha;
   }
@@ -27,6 +28,7 @@ export default class Layer {
   draw(ctx: CanvasRenderingContext2D) {
     ctx.save();
     ctx.globalAlpha = this.alpha;
+    // load this.image which is a path to an image
     ctx.drawImage(this.image, this.x, this.y, this.width, this.height);
     ctx.drawImage(
       this.image,

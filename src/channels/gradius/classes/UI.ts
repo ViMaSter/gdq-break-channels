@@ -1,4 +1,7 @@
 import Game from "./Game";
+import fontDigits from "./images/fontDigits.png";
+import fontLetters from "./images/fontLetters.png";
+import lives from "./images/lives.png";
 
 export default class UI {
   digitSheet: HTMLImageElement;
@@ -14,11 +17,12 @@ export default class UI {
 
   constructor(game: Game) {
     this.game = game;
-    this.digitSheet = document.getElementById("fontDigits") as HTMLImageElement;
-    this.letterSheet = document.getElementById(
-      "fontLetters"
-    ) as HTMLImageElement;
-    this.livesSprite = document.getElementById("lives") as HTMLImageElement;
+    this.digitSheet = new Image();
+    this.digitSheet.src = fontDigits;
+    this.letterSheet = new Image();
+    this.letterSheet.src = fontLetters;
+    this.livesSprite = new Image();
+    this.livesSprite.src = lives;
   }
 
   draw(ctx: CanvasRenderingContext2D) {
