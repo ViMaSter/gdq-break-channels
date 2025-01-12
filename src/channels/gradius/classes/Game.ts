@@ -33,18 +33,20 @@ export default class Game {
   };
   // Variables for enemies
   enemies: Enemy[] = [];
-  enemyInterval = 5000 / 20;
-  enemyTimer = 4000 / 20;
   explosions: Explosion[] = [];
 
   // Game States
-  gameOver = false;
   isMoving = true;
   timeoutSignal = 0;
 
   // Background Layers Handling
-  speed = 1;
+  speed = 0.75;
   bg: Background;
+
+  // Vertical position of last enemy (to prevent spawning enemies too close to each other)
+  lastEnemyY: number;
+  // true, if the last enemy was a flipper
+  nextEnemyFlipper: boolean;
 
   constructor(width: number, height: number) {
     this.width = width;
@@ -53,6 +55,8 @@ export default class Game {
     this.input = new InputHandler(this);
     this.ui = new UI(this);
     this.bg = new Background(this);
+    this.lastEnemyY = 0;
+    this.nextEnemyFlipper = false;
   }
   update() {
     if (this.isMoving) {
@@ -62,10 +66,6 @@ export default class Game {
         enemy.update();
         // Check collision of enemy with player
         if (this.checkCollision(this.player, enemy)) {
-          this.player.lives = Math.max(this.player.lives - 1, 0);
-          if (this.player.lives === 0) {
-            this.gameOver = true;
-          }
           this.isMoving = false;
           this.explosions.push(
             new PlayerExplosion(this, this.player.x - 15, this.player.y - 4)
@@ -77,13 +77,10 @@ export default class Game {
         // Check collision of enemy with projectiles
         this.player.projectiles.forEach((projectile) => {
           if (this.checkCollision(projectile, enemy)) {
-            enemy.lives--;
             projectile.markedForDelete = true;
-            if (enemy.lives <= 0) {
-              this.score += enemy.score;
-              enemy.markedForDeletion = true;
-              this.explosions.push(new Explosion(this, enemy.x, enemy.y));
-            }
+            this.score += enemy.score;
+            enemy.markedForDeletion = true;
+            this.explosions.push(new Explosion(this, enemy.x, enemy.y));
           }
         });
         // Check collision between projectiles from options and enemies
@@ -91,28 +88,17 @@ export default class Game {
           this.player.options.forEach((option) =>
             option.projectiles.forEach((projectile) => {
               if (this.checkCollision(projectile, enemy)) {
-                enemy.lives--;
                 projectile.markedForDelete = true;
-                if (enemy.lives <= 0) {
-                  this.score += enemy.score;
-                  enemy.markedForDeletion = true;
-                  this.explosions.push(new Explosion(this, enemy.x, enemy.y));
-                }
+                this.score += enemy.score;
+                enemy.markedForDeletion = true;
+                this.explosions.push(new Explosion(this, enemy.x, enemy.y));
               }
             })
           );
       });
       this.enemies = this.enemies.filter((enemy) => !enemy.markedForDeletion);
-
-      // Adding enemies every 2 seconds
-      if (this.enemyTimer > this.enemyInterval && !this.gameOver) {
-        this.addEnemy();
-        this.enemyTimer = 0;
-      } else {
-        this.enemyTimer++;
-      }
     } else {
-      if (!this.timeoutSignal && !this.gameOver)
+      if (!this.timeoutSignal)
         this.timeoutSignal = setTimeout(() => {
           this.bg.reset();
           this.player.reset();
@@ -138,19 +124,22 @@ export default class Game {
     });
   }
   addEnemy() {
-    // spawn 2 enemies with at least 50px gap, not negative or more than height
-    const firstEnemyY = Math.floor(Math.random() * (this.height - 50));
-    // while less than 50px from top or bottom and away from the first enemy, keep generating
-    let secondEnemyY = Math.floor(Math.random() * (this.height - 50));
+    let newEnemyY = Math.floor(Math.random() * (this.height - 50 - 27));
     while (
-      secondEnemyY < 50 ||
-      secondEnemyY > this.height - 50 ||
-      Math.abs(firstEnemyY - secondEnemyY) < 50
+      newEnemyY < 50 ||
+      newEnemyY > this.height - 50 ||
+      Math.abs(this.lastEnemyY - newEnemyY) < 50
     ) {
-      secondEnemyY = Math.floor(Math.random() * this.height);
+      newEnemyY = Math.floor(Math.random() * this.height);
     }
-    this.enemies.push(new Garun(this, firstEnemyY));
-    this.enemies.push(new Flipper(this, secondEnemyY));
+
+    this.nextEnemyFlipper = !this.nextEnemyFlipper;
+    if (this.nextEnemyFlipper) {
+      this.enemies.push(new Flipper(this, newEnemyY));
+      return;
+    }
+    
+    this.enemies.push(new Garun(this, newEnemyY));
   }
   checkCollision(
     rect1: Player | Enemy | Projectile,

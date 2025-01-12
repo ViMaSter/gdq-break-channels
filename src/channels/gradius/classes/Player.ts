@@ -12,9 +12,8 @@ export default class Player {
   y: number;
   speedX = 0;
   speedY = 0;
-  maxSpeed = 6;
+  maxSpeed = 4.5;
   // Lives and Projectiles
-  lives = 3;
   projectiles: Projectile[] = [];
   lastShotTime = 0;
   shootCooldown = 100;
@@ -71,7 +70,7 @@ export default class Player {
     this.y = this.y + this.speedY;
     this.y = Math.max(
       0,
-      Math.min(this.y, this.game.height - this.height)
+      Math.min(this.y, this.game.height - this.height - 27)
     );
 
     if (this.isLastPositionChanged()) {
@@ -102,7 +101,6 @@ export default class Player {
   draw(ctx: CanvasRenderingContext2D) {
     if (this.game.isMoving) {
       this.options.length && this.options.forEach((option) => option.draw(ctx));
-      debugger;
       ctx.drawImage(
         this.sheet,
         90 * this.sheetOffsetX,

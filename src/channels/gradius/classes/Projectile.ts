@@ -8,7 +8,7 @@ export default class Projectile {
   // Position and Speed
   x: number;
   y: number;
-  speed = 15;
+  speed = 11.25;
   // LifeCycle
   markedForDelete = false;
 

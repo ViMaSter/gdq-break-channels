@@ -9,9 +9,8 @@ export class Enemy {
   x: number;
   y: number;
   markedForDeletion = false;
-  speedX = -2;
+  speedX = -1.5;
   color = "red";
-  lives = 1;
   score = 100;
   constructor(game: Game) {
     this.game = game;
@@ -62,7 +61,7 @@ export class Garun extends Enemy {
   animateSprite() {
     this.staggerFrames--;
     if (this.staggerFrames < 0) {
-      this.staggerFrames = 2;
+      this.staggerFrames = 4;
       this.sheetOffsetX = (this.sheetOffsetX + 1) % 8;
     }
   }

@@ -8,6 +8,7 @@ import Game from "./classes/Game";
 import { usePIXICanvas } from '@gdq/lib/hooks/usePIXICanvas';
 import { useEffect, useRef } from 'react';
 import { debug } from 'console';
+import { useRafCapped } from '@gdq/lib/hooks/useRafCapped';
 
 registerChannel('Gradius', 30, Gradius, {
 	position: 'bottomLeft',
@@ -18,41 +19,28 @@ registerChannel('Gradius', 30, Gradius, {
 export function Gradius(props: ChannelProps) {
 	const [total] = useReplicant<Total | null>('total', null);
 	
-	const game = new Game(1092, 332);
-
-	const FPS = 45;
-	let elapsed: number, end: number;
-	let now = Date.now();
+	const game = useRef(new Game(1092, 332));
 	
     const canvasRef = useRef<HTMLCanvasElement>(null);
+	let gameStarted = false;
 
-	function animate() {
-		requestAnimationFrame(animate);
-		end = Date.now();
-		elapsed = end - now;
-		if (elapsed > 1000 / FPS) {
-			end = now;
-			now = Date.now();
-			// Main Code here
-			const ctx = canvasRef.current!.getContext('2d')!;
-			ctx.clearRect(0, 0, 1092, 332);
-			game.update();
-			game.draw(ctx);
-		}
-	}
+	useRafCapped(() => {
+		const ctx = canvasRef.current!.getContext('2d')!;
+		ctx.clearRect(0, 0, 1092, 332);
+		game.current.update();
+		game.current.draw(ctx);
+	});
 
 	// when canvas becomes available, initialize the game
 	useEffect(() => {
-		debugger;
 		if (canvasRef.current) {
-			animate();
+			if (gameStarted) return;
+			gameStarted = true;
 		}
 	}, [canvasRef.current]);
 
-	useListenFor('donation', (donation: FormattedDonation) => {
-		/**
-		 * Respond to a donation.
-		 */
+	useListenFor('donation', () => {
+		game.current.addEnemy();
 	});
 
 	return (
@@ -76,14 +64,4 @@ const Container = styled.div`
 	margin: 0;
 `;
 
-const TotalEl = styled.div`
-	font-family: gdqpixel;
-	font-size: 46px;
-	color: white;
 
-	position: absolute;
-
-	left: 50%;
-	top: 50%;
-	transform: translate(-50%, -50%);
-`;

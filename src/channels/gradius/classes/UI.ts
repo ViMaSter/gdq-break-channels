@@ -1,12 +1,10 @@
 import Game from "./Game";
 import fontDigits from "./images/fontDigits.png";
 import fontLetters from "./images/fontLetters.png";
-import lives from "./images/lives.png";
 
 export default class UI {
   digitSheet: HTMLImageElement;
   letterSheet: HTMLImageElement;
-  livesSprite: HTMLImageElement;
   game: Game;
   fontSize = 25;
   fontFamily = "Press Start 2P";
@@ -21,58 +19,26 @@ export default class UI {
     this.digitSheet.src = fontDigits;
     this.letterSheet = new Image();
     this.letterSheet.src = fontLetters;
-    this.livesSprite = new Image();
-    this.livesSprite.src = lives;
   }
 
   draw(ctx: CanvasRenderingContext2D) {
     this.renderScore(ctx);
-    this.renderPlayerLives(ctx);
-  }
-
-  renderPlayerLives(ctx: CanvasRenderingContext2D) {
-    ctx.font = `${this.fontSize}px '${this.fontFamily}'`;
-    ctx.fillStyle = this.color;
-    ctx.save();
-    ctx.imageSmoothingEnabled = false;
-    ctx.drawImage(this.livesSprite, 0, 0, 32, 32, 30, 600 - 12 - 32, 32, 32);
-    ctx.restore();
-    this.drawDigit(
-      ctx,
-      this.game.player.lives,
-      80,
-      600 - 12 - this.characterHeight
-    );
   }
 
   renderScore(ctx: CanvasRenderingContext2D) {
     const scoreString = String(this.game.score).padStart(7, "0");
-    const startX = 250;
-    const startY = 600 - 12;
+    const startX = 0;
+    const startY = 0;
 
-    if (!this.game.gameOver) {
-      for (let i = 0; i < scoreString.length; i++) {
-        const digit = parseInt(scoreString[i], 10);
-        this.drawDigit(
-          ctx,
-          digit,
-          startX + i * this.characterWidth,
-          startY - this.characterHeight
-        );
-      }
-      return;
-    }
-
-    "GAME OVER"
-      .split("")
-      .forEach((letter, index) =>
-        this.drawCharacter(
-          ctx,
-          letter.charCodeAt(0),
-          startX + index * this.characterWidth,
-          startY - this.characterHeight
-        )
+    for (let i = 0; i < scoreString.length; i++) {
+      const digit = parseInt(scoreString[i], 10);
+      this.drawDigit(
+        ctx,
+        digit,
+        startX + i * this.characterWidth,
+        startY - this.characterHeight
       );
+    }
   }
 
   drawDigit(
